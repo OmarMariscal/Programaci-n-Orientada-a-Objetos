@@ -229,7 +229,7 @@ class Mantenimiento{
     public:
         Mantenimiento(int, Vehiculo*, Mecanico*, Fecha, string, float);
         virtual ~Mantenimiento(); //Destructor Virtual
-        virtual void mostrarDetalles();
+        virtual void mostrarInformacion();
         virtual string getTipo() = 0; //Método Abstracto Puro Útil para el Polimorfismo Dinámico
         
         //Gette's
@@ -266,6 +266,7 @@ class Vehiculo{
         virtual void mostrarInformacion();
         void agregarMantenimiento(Mantenimiento*);
         void mostrarHistorial();
+        bool eliminarMantenimiento(int);
 
 
         //Getter's
@@ -275,9 +276,7 @@ class Vehiculo{
         int getAnio();
         float getKilometraje();
         Fecha getFechaUltimoMantenimiento();
-        void actualizarUltimoMantenimiento();
-        bool eliminarMantenimiento(int);
-        vector<Mantenimiento*> getHistorial(){return historial;}
+        vector<Mantenimiento*> getHistorial();
 
         //Setter's
         void setPlacas(string);
@@ -285,6 +284,8 @@ class Vehiculo{
         void setModelo(string);
         void setAnio(int);
         void setKilometraje(float);
+        void actualizarUltimoMantenimiento();
+
 };
 
 //Constructor de Vehículo
@@ -317,7 +318,7 @@ void Vehiculo::mostrarHistorial(){
 
     cout<<"Registro de Mantenimientos a "<<getTipoVehiculo()<<" de placas "<<placas<<":"<<endl;
     for(auto mantenimiento : historial){
-        mantenimiento->mostrarDetalles();
+        mantenimiento->mostrarInformacion();
         cout<<endl<<endl;        
     }
 }
@@ -387,6 +388,8 @@ string Vehiculo::getModelo(){return modelo;}
 float Vehiculo::getKilometraje(){return kilometraje;}
 Fecha Vehiculo::getFechaUltimoMantenimiento(){return ultimoMantenimiento;}
 int Vehiculo::getAnio(){return anio;}
+vector<Mantenimiento*> Vehiculo::getHistorial(){return historial;}
+
 
 //------------------------------------------Clase Carro ----------------------------------------------------------
 //------------------------------------------Clase Hija de Vehículo ----------------------------------------------------------
@@ -540,7 +543,7 @@ Mantenimiento::Mantenimiento(int id, Vehiculo* vehiculo, Mecanico* responsable, 
 Mantenimiento::~Mantenimiento(){}
 
 //Mostrar Información Relevante
-void Mantenimiento::mostrarDetalles(){
+void Mantenimiento::mostrarInformacion(){
     cout<<"Detalles del Mantenimineto con id "<<id<<endl;
     cout<<getTipo()<<endl;
     cout<<"Informacion del Vehiculo------------------------------"<<endl;
@@ -571,7 +574,7 @@ class MantenimientoPreventivo : public Mantenimiento{
     public:
         MantenimientoPreventivo(int, Vehiculo*, Mecanico*, Fecha, string, float, float, bool); //Constructor *No Inicializa las tareas Programas*
         MantenimientoPreventivo(int, Vehiculo*, Mecanico*, Fecha, string, float, vector<string>, float, bool); //Sobreescritura del Constructor *Inicializa las Tareas Programas*
-        void mostrarDetalles() override; //Sobreescritura de MostrarDetalles
+        void mostrarInformacion() override; //Sobreescritura de mostrarInformacion
         void agregarTarea(string); //Agregar Tarea al vector de Tareas Programadas
         
         //Getter's
@@ -601,8 +604,8 @@ MantenimientoPreventivo::MantenimientoPreventivo(int id, Vehiculo* vehiculo, Mec
 void MantenimientoPreventivo::setKilometrajeObjetivo(float kilometrajeObjetivo){this->kilometrajeObjetivo = kilometrajeObjetivo;}
 void MantenimientoPreventivo::setRealizadoATiempo(bool realizadoATiempo){this->realizadoATiempo = realizadoATiempo;}
 
-void MantenimientoPreventivo::mostrarDetalles(){
-    Mantenimiento::mostrarDetalles();
+void MantenimientoPreventivo::mostrarInformacion(){
+    Mantenimiento::mostrarInformacion();
     if(tareasProgramadas.size() != 0){
         cout<<"Tareas Programadas para el Mantenimiento Preventivo: "<<endl;
         for(size_t i = 0; i < tareasProgramadas.size(); i++)
@@ -633,7 +636,7 @@ class MantenimientoCorrectivo : public Mantenimiento{
         bool requirioReemplazo;
     public:
         MantenimientoCorrectivo(int, Vehiculo*, Mecanico*, Fecha, string, float, string, string, bool);
-        void mostrarDetalles() override; //Sobreescritura de MostrarDetalles
+        void mostrarInformacion() override; //Sobreescritura de mostrarInformacion
         
         //Getter's
         string getComponenteAveriado();
@@ -660,8 +663,8 @@ MantenimientoCorrectivo::MantenimientoCorrectivo(int id, Vehiculo* vehiculo, Mec
     this->requirioReemplazo = requirioReemplazo;
 }
 
-void MantenimientoCorrectivo::mostrarDetalles(){
-    Mantenimiento::mostrarDetalles();
+void MantenimientoCorrectivo::mostrarInformacion(){
+    Mantenimiento::mostrarInformacion();
     cout<<"Componente Averiado: "<<componenteAveriado<<endl;
     cout<<"Causa Detectada de la Falla: "<<causaFalla<<endl;
 
@@ -1224,10 +1227,6 @@ void GIVAM::ordenarMantenimientosPorFecha(){
     guardarHistorial();
 }
 
-
-
-
-
 class GestorMantenimientoCSV{
     private:
         string nombreArchivo = "Mantenimiento.csv";
@@ -1768,7 +1767,7 @@ Mantenimiento* Menu::pedirMantenimiento(string tipo){
             if(respuesta){
                 cout<<"\n El Mantenimiento de ID "<<id<<" ya esta Registrado en el Sistema"<<endl;
                 cout<<"Posee el Siguiente Registro: "<<endl;
-                respuesta->mostrarDetalles();
+                respuesta->mostrarInformacion();
                 cout<<"\n\nPor favor, ingrese un ID distintio."<<endl;
             }
         }while(respuesta); 
@@ -2150,7 +2149,7 @@ void Menu::registrarNuevoMantenimiento(){
         if(verificadorMantenimiento){
             cout<<"\nEl ID "<<id<<" ya esta registrado con un mantenimiento."<<endl;
             cout<<"Dicho mantenimiento es el siguiente: "<<endl;
-            verificadorMantenimiento->mostrarDetalles();
+            verificadorMantenimiento->mostrarInformacion();
             cout<<"\n\nPor favor, seleccione otro ID para su Nuevo Mantenimiento."<<endl;
             system("PAUSE");
             system("CLS");
@@ -2334,7 +2333,7 @@ void Menu::eliminarMantenimineto(){
 
         if(mantenimiento){
             cout<<"A continuacion, se muestra la informacion del Mantenimiento seleccionado: "<<endl;
-            mantenimiento->mostrarDetalles();
+            mantenimiento->mostrarInformacion();
             int confirmacion = limiteInt("\nEsta Seguro/a que Desea Eliminar Este Mantenimiento? (1.Si/2.No): ",1,2);
         
             if(confirmacion == 1){
@@ -2704,7 +2703,7 @@ void Menu::editarMantenimiento(){
                     verificador = sistema.buscarMantenimiento(especificoInt);
                     if(verificador){
                         cout<<"El ID ya le pertenece al siguiente registro: ";
-                        verificador->mostrarDetalles();
+                        verificador->mostrarInformacion();
                         cout<<"\nPor favor, ingrese un ID diferente.";
                     }
                 }while(verificador);
@@ -2845,7 +2844,7 @@ void Menu::buscarMantenimientoPorId(){
         system("CLS");
         cout<<"GIVAM: Consulta de Mantenimiento."<<endl;
         mantenimiento = pedirMantenimiento("Registrado");
-        mantenimiento->mostrarDetalles();
+        mantenimiento->mostrarInformacion();
         cout<<endl;
         system("PAUSE");
         repetidor = limiteInt("Desea Realizar una Nueva Busqueda?\n1. Si.\n2. No.\n",1,2);
