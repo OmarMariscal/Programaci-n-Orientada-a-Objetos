@@ -2487,11 +2487,11 @@ void Menu::editarUsuario(){
             case 5:{
                 int confirmarEliminacion = limiteInt("Esta Seguro/a que desea Elimiar Este Perfil? (1.Si/2.No): \nNota: Para los Mecanicos, tambien seran eliminados los mantenimientos que ha realizado\n",1,2);
                 if(confirmarEliminacion == 1){
-                    sistema.eliminarUsuario(usuario->getNombre());
+                    sistema.eliminarUsuario(usuario->getNombreUsuario());
                     usuario = nullptr;
                     cout<<"Perfil Eliminado Con Exito."<<endl;
                     cout<<"Volviendo a la Pantalla de inicio"<<endl;
-                    system("CLS");
+                    system("PAUSE");
                     login();
                 }
                 break;                
@@ -2539,7 +2539,7 @@ void Menu::editarVehiculo(){
         cout<<"GIVAM: Editar Informacion de Vehiculos------------------------------------------------------\n";
         vehiculo = pedirPlacas("Registrado");
         consulta = "A continuacion se muestra la informacion del Vehiculo Seleccionado\nIngrese el numero de lo que desea modificar.\n";
-        consulta = consulta + "1. Placas: " + vehiculo->getPlacas() + "\n2. Marca: " + vehiculo->getMarca() + "\n3. Modelo: " + vehiculo->getModelo() + "\n4. Anio: " + vehiculo->getModelo() + "\n5. Kilometraje: " + to_string(vehiculo->getKilometraje());
+        consulta = consulta + "1. Placas: " + vehiculo->getPlacas() + "\n2. Marca: " + vehiculo->getMarca() + "\n3. Modelo: " + vehiculo->getModelo() + "\n4. Anio: " + to_string(vehiculo->getAnio()) + "\n5. Kilometraje: " + to_string(vehiculo->getKilometraje());
 
         if(vehiculo->getTipoVehiculo() == "Carro"){
             Carro* carro = dynamic_cast<Carro*>(vehiculo);
